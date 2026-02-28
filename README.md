@@ -3,6 +3,10 @@
 >
 > **This is not finished yet it will be done soon probably by march 2nd 2026.**
 
+> [!WARNING]
+>
+> **As of current this VM will only be able to emulate very few 3ds games but I will be constantly working on it so it can get up to par with most 3ds games and possibly some nintendo switch games.**
+
 
 # mid-end-emulator-core
 Advanced emulator core that can be used for newer gen consoles. Made in csharp.
