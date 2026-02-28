@@ -1,0 +1,2 @@
+/workspaces/mid-end-emulator-core/site/downloads/linux-arm64/mindworks.pdb
+/workspaces/mid-end-emulator-core/site/downloads/linux-arm64/mindworks

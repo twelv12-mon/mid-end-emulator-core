@@ -833,6 +833,60 @@ details[open] summary { color: var(--cyan); }
   </div>
 
   <div class="card">
+    <div style="margin-bottom:18px;">
+      <h2 style="font-family:'Orbitron',monospace;font-size:0.78em;letter-spacing:0.15em;color:#ccc;text-transform:uppercase;">Pre-Compiled Builds</h2>
+      <p style="color:#555;font-size:0.9em;margin-top:6px;line-height:1.6;">Ready-to-run binaries for each platform. Extract and run directly: <code style="color:var(--cyan);">./mindworks game.3ds</code> — no .NET SDK required.</p>
+    </div>
+
+    <div id="downloadsList" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin:18px 0;">
+      <div class="build-card">
+        <div class="build-icon">🐧</div>
+        <div class="build-name">Linux x64</div>
+        <div style="color:#666;font-size:0.85em;margin:10px 0;">Standalone binary (~12 MB)</div>
+        <a href="downloads/linux-x64/mindworks" class="btn-grad" style="display:inline-block;text-decoration:none;margin-top:8px;font-size:0.68em;">Download</a>
+        <div style="font-size:0.75em;color:#333;margin-top:6px;">SDL2 & OpenAL required</div>
+      </div>
+      <div class="build-card">
+        <div class="build-icon">🐧</div>
+        <div class="build-name">Linux ARM64</div>
+        <div style="color:#666;font-size:0.85em;margin:10px 0;">Raspberry Pi 4/5 (~12 MB)</div>
+        <a href="downloads/linux-arm64/mindworks" class="btn-grad" style="display:inline-block;text-decoration:none;margin-top:8px;font-size:0.68em;">Download</a>
+        <div style="font-size:0.75em;color:#333;margin-top:6px;">SDL2 & OpenAL required</div>
+      </div>
+      <div class="build-card">
+        <div class="build-icon">🪟</div>
+        <div class="build-name">Windows x64</div>
+        <div style="color:#666;font-size:0.85em;margin:10px 0;">Console app (~25 MB)</div>
+        <a href="downloads/windows-x64/mindworks.exe" class="btn-grad" style="display:inline-block;text-decoration:none;margin-top:8px;font-size:0.68em;">Download</a>
+        <div style="font-size:0.75em;color:#333;margin-top:6px;">SDL2.dll + OpenAL32.dll included</div>
+      </div>
+      <div class="build-card">
+        <div class="build-icon">🍎</div>
+        <div class="build-name">macOS x64</div>
+        <div style="color:#666;font-size:0.85em;margin:10px 0;">Intel Macs (~14 MB)</div>
+        <a href="downloads/macos-x64/mindworks" class="btn-grad" style="display:inline-block;text-decoration:none;margin-top:8px;font-size:0.68em;">Download</a>
+        <div style="font-size:0.75em;color:#333;margin-top:6px;">SDL2 & OpenAL required</div>
+      </div>
+      <div class="build-card">
+        <div class="build-icon">🍎</div>
+        <div class="build-name">macOS ARM64</div>
+        <div style="color:#666;font-size:0.85em;margin:10px 0;">Apple Silicon (~13 MB)</div>
+        <a href="downloads/macos-arm64/mindworks" class="btn-grad" style="display:inline-block;text-decoration:none;margin-top:8px;font-size:0.68em;">Download</a>
+        <div style="font-size:0.75em;color:#333;margin-top:6px;">SDL2 & OpenAL required</div>
+      </div>
+    </div>
+
+    <div class="infobox" style="border-left-color:var(--green);margin-top:8px;">
+      <h3 style="color:var(--green);">Linux Dependencies</h3>
+      <p style="font-size:0.88em;"><code style="color:var(--cyan);">sudo apt install libsdl2-2.0-0 libopenal1</code></p>
+    </div>
+    <div class="infobox" style="border-left-color:var(--amber);margin-top:8px;">
+      <h3 style="color:var(--amber);">macOS Dependencies</h3>
+      <p style="font-size:0.88em;"><code style="color:var(--cyan);">brew install sdl2 openal-soft</code></p>
+    </div>
+  </div>
+
+  <div class="card">
     <h2 style="font-family:'Orbitron',monospace;font-size:0.78em;letter-spacing:0.15em;color:#ccc;text-transform:uppercase;margin-bottom:18px;">Control Map</h2>
     <div class="keymap">
       <div class="key-row"><span class="key-cap">↑↓←→</span><span class="key-label">D-Pad</span></div>

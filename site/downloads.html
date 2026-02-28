@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindWorks 3DS - Downloads</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan:    #00f5ff;
+  --magenta: #ff00ff;
+  --green:   #00ff88;
+  --amber:   #ffb300;
+  --bg:      #06060e;
+  --bg2:     #0b0b18;
+  --bg3:     #0f0f20;
+  --surface: rgba(255,255,255,0.025);
+  --border:  rgba(255,255,255,0.07);
+}
+
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,245,255,0.012) 2px, rgba(0,245,255,0.012) 4px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: 0; right: 0;
+  width: 420px; height: 420px;
+  background: linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at 100% 100%, black 20%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  padding: 48px 20px 28px;
+  border-bottom: 1px solid var(--border);
+}
+
+.logo {
+  font-family: 'Orbitron', monospace;
+  font-size: 2.2em;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  background: linear-gradient(90deg, var(--cyan) 0%, var(--magenta) 50%, var(--cyan) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradRoll 5s linear infinite;
+  margin-bottom: 4px;
+}
+@keyframes gradRoll { from { background-position: 0 0; } to { background-position: 200% 0; } }
+
+.subtitle {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75em;
+  letter-spacing: 0.2em;
+  color: #555;
+  text-transform: uppercase;
+}
+
+.back-link {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 8px 18px;
+  background: rgba(0,245,255,0.06);
+  border: 1px solid rgba(0,245,255,0.2);
+  border-radius: 20px;
+  color: var(--cyan);
+  text-decoration: none;
+  font-size: 0.82em;
+  letter-spacing: 0.06em;
+  transition: all 0.2s;
+}
+.back-link:hover { background: rgba(0,245,255,0.12); border-color: var(--cyan); }
+
+#main {
+  flex: 1;
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 28px 20px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.desc {
+  text-align: center;
+  color: #666;
+  font-size: 0.95em;
+  line-height: 1.7;
+  margin-bottom: 38px;
+}
+
+.downloads-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.download-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 18px;
+  transition: all 0.2s;
+  position: relative;
+  text-align: center;
+}
+
+.download-card:hover {
+  border-color: rgba(0,245,255,0.3);
+  background: rgba(0,245,255,0.03);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0,245,255,0.08);
+}
+
+.download-icon {
+  font-size: 2.2em;
+  margin-bottom: 10px;
+  display: block;
+}
+
+.download-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.68em;
+  letter-spacing: 0.1em;
+  color: #aaa;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.download-variant {
+  font-size: 0.88em;
+  color: #666;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.download-link {
+  display: inline-block;
+  background: linear-gradient(90deg, var(--cyan), var(--magenta));
+  color: #000;
+  padding: 9px 24px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 0.7em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: all 0.2s;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0,245,255,0.2);
+}
+
+.download-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0,245,255,0.32);
+}
+
+.download-size {
+  font-size: 0.7em;
+  color: #333;
+  margin-top: 8px;
+}
+
+.download-deps {
+  font-size: 0.75em;
+  color: #2a3a3a;
+  margin-top: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  line-height: 1.4;
+}
+
+.platform-section {
+  margin-bottom: 40px;
+}
+
+.section-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.68em;
+  letter-spacing: 0.12em;
+  color: var(--cyan);
+  text-transform: uppercase;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0,245,255,0.12);
+  margin-bottom: 18px;
+}
+
+.instruction-box {
+  background: rgba(0,245,255,0.03);
+  border-left: 2px solid var(--cyan);
+  border-radius: 0 8px 8px 0;
+  padding: 16px 18px;
+  margin-top: 24px;
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
+.instruction-box code {
+  background: rgba(0,245,255,0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--cyan);
+  font-family: 'Share Tech Mono', monospace;
+}
+
+@media (max-width: 600px) {
+  #main { padding: 16px 14px 40px; }
+  .downloads-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<div id="header">
+  <div class="logo">MINDWORKS 3DS</div>
+  <div class="subtitle">Pre-Compiled Binaries</div>
+  <a href="index.html" class="back-link">← Back to Main</a>
+  <div class="desc" style="margin-top: 18px;">
+    Download ready-to-run emulator builds for your platform.<br>
+    Extract and run: <code style="color:var(--cyan);">./mindworks game.3ds</code>
+  </div>
+</div>
+
+<div id="main">
+
+  <div class="platform-section">
+    <div class="section-title">📦 Linux</div>
+    <div class="downloads-grid">
+      <div class="download-card">
+        <span class="download-icon">🐧</span>
+        <div class="download-name">Linux x64</div>
+        <span class="download-variant">Intel / AMD Processors</span>
+        <a href="downloads/linux-x64/mindworks" class="download-link" download>Download Binary</a>
+        <div class="download-size">~12 MB</div>
+        <div class="download-deps">Requires SDL2 & OpenAL</div>
+      </div>
+      <div class="download-card">
+        <span class="download-icon">🐧</span>
+        <div class="download-name">Linux ARM64</div>
+        <span class="download-variant">Raspberry Pi 4/5</span>
+        <a href="downloads/linux-arm64/mindworks" class="download-link" download>Download Binary</a>
+        <div class="download-size">~12 MB</div>
+        <div class="download-deps">Requires SDL2 & OpenAL</div>
+      </div>
+    </div>
+    <div class="instruction-box">
+      <strong>Installation:</strong><br>
+      <code>chmod +x mindworks</code><br>
+      <code>sudo apt install libsdl2-2.0-0 libopenal1</code><br>
+      <code>./mindworks game.3ds</code>
+    </div>
+  </div>
+
+  <div class="platform-section">
+    <div class="section-title">🪟 Windows</div>
+    <div class="downloads-grid">
+      <div class="download-card">
+        <span class="download-icon">🪟</span>
+        <div class="download-name">Windows x64</div>
+        <span class="download-variant">Intel / AMD Processors</span>
+        <a href="downloads/windows-x64/mindworks.exe" class="download-link" download>Download EXE</a>
+        <div class="download-size">~25 MB</div>
+        <div class="download-deps">SDL2.dll + OpenAL32.dll included</div>
+      </div>
+    </div>
+    <div class="instruction-box">
+      <strong>Installation (PowerShell):</strong><br>
+      <code style="color:#888;">Extract this folder anywhere, then:</code><br>
+      <code>.\mindworks.exe game.3ds</code><br>
+      <strong>Note:</strong> Windows Defender / SmartScreen may warn on first run (code is open-source, safe to allow).
+    </div>
+  </div>
+
+  <div class="platform-section">
+    <div class="section-title">🍎 macOS</div>
+    <div class="downloads-grid">
+      <div class="download-card">
+        <span class="download-icon">🍎</span>
+        <div class="download-name">macOS x64</div>
+        <span class="download-variant">Intel Macs</span>
+        <a href="downloads/macos-x64/mindworks" class="download-link" download>Download Binary</a>
+        <div class="download-size">~14 MB</div>
+        <div class="download-deps">Requires SDL2 & OpenAL</div>
+      </div>
+      <div class="download-card">
+        <span class="download-icon">🍎</span>
+        <div class="download-name">macOS ARM64</div>
+        <span class="download-variant">Apple Silicon (M1/M2/M3/M4)</span>
+        <a href="downloads/macos-arm64/mindworks" class="download-link" download>Download Binary</a>
+        <div class="download-size">~13 MB</div>
+        <div class="download-deps">Requires SDL2 & OpenAL</div>
+      </div>
+    </div>
+    <div class="instruction-box">
+      <strong>Installation (Terminal):</strong><br>
+      <code>chmod +x mindworks</code><br>
+      <code>brew install sdl2 openal-soft</code><br>
+      <code>./mindworks game.3ds</code>
+    </div>
+  </div>
+
+  <div class="instruction-box" style="margin-top: 40px; border-left-color:var(--amber);">
+    <strong style="color:var(--amber);">ℹ For 3DS ROM Loading:</strong><br>
+    The emulator loads decrypted 3DS ROM files (.3ds, .cci) or ARM11 ELF homebrew (.elf). You'll need a decrypted ROM image — obtain these legally from your own cartridges using tools like <code>ctrtool</code>.
+  </div>
+
+</div>
+
+</body>
+</html>
