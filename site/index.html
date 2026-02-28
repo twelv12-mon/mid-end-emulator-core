@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindWorks 3DS</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cyan:    #00f5ff;
+  --magenta: #ff00ff;
+  --green:   #00ff88;
+  --amber:   #ffb300;
+  --bg:      #06060e;
+  --bg2:     #0b0b18;
+  --bg3:     #0f0f20;
+  --surface: rgba(255,255,255,0.025);
+  --border:  rgba(255,255,255,0.07);
+  --sidebar-w: 310px;
+  --glow-c:  rgba(0,245,255,0.18);
+}
+
+*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Rajdhani', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  color: #e0e0e0;
+  overflow-x: hidden;
+  display: flex;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,245,255,0.012) 2px,
+      rgba(0,245,255,0.012) 4px);
+  pointer-events: none;
+  z-index: 0;
+  animation: scanPan 12s linear infinite;
+}
+@keyframes scanPan { from { background-position: 0 0; } to { background-position: 0 200px; } }
+
+body::after {
+  content: '';
+  position: fixed;
+  bottom: 0; right: 0;
+  width: 420px; height: 420px;
+  background:
+    linear-gradient(rgba(0,245,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,245,255,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse at 100% 100%, black 20%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+#sidebar {
+  width: var(--sidebar-w);
+  height: 100vh;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0;
+  transform: translateX(calc(-1 * var(--sidebar-w)));
+  transition: transform 0.36s cubic-bezier(0.4,0,0.2,1);
+  z-index: 200;
+  box-shadow: 6px 0 60px rgba(0,245,255,0.06);
+}
+
+#sidebar.open { transform: translateX(0); }
+
+.sidebar-top {
+  padding: 22px 18px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sidebar-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.68em;
+  letter-spacing: 0.22em;
+  color: var(--cyan);
+  text-transform: uppercase;
+}
+
+.badge {
+  background: rgba(0,245,255,0.1);
+  border: 1px solid rgba(0,245,255,0.25);
+  border-radius: 20px;
+  color: var(--cyan);
+  font-size: 0.72em;
+  padding: 2px 10px;
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+#romSearch {
+  margin: 12px 14px 8px;
+  padding: 9px 14px;
+  background: rgba(0,245,255,0.03);
+  border: 1px solid rgba(0,245,255,0.15);
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.93em;
+  letter-spacing: 0.04em;
+  width: calc(100% - 28px);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+#romSearch:focus {
+  border-color: rgba(0,245,255,0.4);
+  box-shadow: 0 0 0 3px rgba(0,245,255,0.06);
+}
+#romSearch::placeholder { color: #3a3a4a; }
+
+#romList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px 10px 16px;
+}
+#romList::-webkit-scrollbar { width: 4px; }
+#romList::-webkit-scrollbar-track { background: transparent; }
+#romList::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(0,245,255,0.3), rgba(255,0,255,0.2));
+  border-radius: 4px;
+}
+
+.group-label {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.55em;
+  letter-spacing: 0.2em;
+  color: #383848;
+  text-transform: uppercase;
+  padding: 14px 8px 5px;
+}
+
+.rom-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 11px;
+  margin-bottom: 2px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 9px;
+  color: #888;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.95em;
+  position: relative;
+  overflow: hidden;
+}
+.rom-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(0,245,255,0.05), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.rom-btn:hover { color: #ddd; border-color: rgba(0,245,255,0.18); }
+.rom-btn:hover::before { opacity: 1; }
+.rom-btn.active { color: var(--cyan); border-color: rgba(0,245,255,0.32); background: rgba(0,245,255,0.055); }
+
+.rom-icon {
+  width: 30px; height: 30px;
+  border-radius: 7px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.95em;
+  flex-shrink: 0;
+}
+.rom-meta { flex: 1; min-width: 0; }
+.rom-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.rom-ext { font-size: 0.72em; color: #3d3d50; letter-spacing: 0.06em; text-transform: uppercase; }
+
+.sidebar-footer {
+  padding: 12px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.sb-btn {
+  width: 100%;
+  padding: 9px;
+  border-radius: 9px;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.8em;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.sb-btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.1);
+  color: #666;
+}
+.sb-btn-ghost:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.2); color: #aaa; }
+.sb-btn-cyan {
+  background: rgba(0,245,255,0.07);
+  border: 1px solid rgba(0,245,255,0.22);
+  color: var(--cyan);
+}
+.sb-btn-cyan:hover {
+  background: rgba(0,245,255,0.13);
+  border-color: var(--cyan);
+  box-shadow: 0 0 16px rgba(0,245,255,0.12);
+}
+
+.src-tag { text-align: center; font-size: 0.68em; color: #2a2a38; letter-spacing: 0.06em; margin-top: 2px; }
+
+.spin {
+  display: inline-block; width: 13px; height: 13px;
+  border: 2px solid rgba(0,245,255,0.15);
+  border-top-color: var(--cyan);
+  border-radius: 50%;
+  animation: doSpin 0.7s linear infinite;
+  vertical-align: middle; margin-right: 5px;
+}
+@keyframes doSpin { to { transform: rotate(360deg); } }
+
+.loading-msg { text-align: center; padding: 32px 16px; color: #444; font-size: 0.88em; }
+.empty-msg { text-align: center; padding: 36px 16px; color: #333; font-size: 0.88em; line-height: 1.9; }
+
+#toggle {
+  position: fixed;
+  top: 20px; left: 14px;
+  z-index: 300;
+  width: 40px; height: 40px;
+  background: rgba(0,245,255,0.06);
+  border: 1px solid rgba(0,245,255,0.25);
+  border-radius: 9px;
+  cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 5px; padding: 0;
+  transition: all 0.2s;
+}
+#toggle:hover { background: rgba(0,245,255,0.14); box-shadow: 0 0 18px rgba(0,245,255,0.18); }
+.bar { width: 17px; height: 1.5px; background: var(--cyan); border-radius: 2px; transition: all 0.25s cubic-bezier(0.4,0,0.2,1); transform-origin: center; }
+body.open #toggle .bar:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+body.open #toggle .bar:nth-child(2) { opacity: 0; transform: scaleX(0); }
+body.open #toggle .bar:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+#overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 150;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+body.open #overlay { opacity: 1; pointer-events: all; }
+
+#main {
+  flex: 1;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 28px 60px;
+  position: relative;
+  z-index: 1;
+}
+
+.header {
+  text-align: center;
+  padding: 48px 20px 8px;
+}
+
+.logo-wrap { position: relative; display: inline-block; }
+
+.logo {
+  font-family: 'Orbitron', monospace;
+  font-size: clamp(2em, 6vw, 3.6em);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  background: linear-gradient(90deg, var(--cyan) 0%, var(--magenta) 50%, var(--cyan) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gradRoll 5s linear infinite;
+  display: block;
+}
+@keyframes gradRoll { from { background-position: 0 0; } to { background-position: 200% 0; } }
+
+.logo-sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(0.65em, 1.5vw, 0.82em);
+  letter-spacing: 0.3em;
+  color: #333;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.logo-line {
+  display: block;
+  width: 100%;
+  height: 1px;
+  margin: 14px auto 0;
+  background: linear-gradient(90deg, transparent, var(--cyan), var(--magenta), transparent);
+  opacity: 0.4;
+}
+
+.social-link {
+  display: inline-flex; align-items: center; gap: 7px;
+  margin-top: 18px;
+  padding: 7px 20px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(0,245,255,0.2);
+  border-radius: 20px;
+  color: #777;
+  text-decoration: none;
+  font-size: 0.82em;
+  letter-spacing: 0.06em;
+  transition: all 0.2s;
+}
+.social-link:hover { background: rgba(0,245,255,0.06); border-color: rgba(0,245,255,0.4); color: var(--cyan); }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 34px;
+  margin: 28px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 60px; height: 60px;
+  background: linear-gradient(135deg, rgba(0,245,255,0.1), transparent 60%);
+  border-radius: 18px 0 0 0;
+}
+
+.drop-zone {
+  border: 1.5px dashed rgba(0,245,255,0.18);
+  border-radius: 14px;
+  padding: 64px 20px 54px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+}
+.drop-zone:hover, .drop-zone.drag { border-color: rgba(0,245,255,0.5); background: rgba(0,245,255,0.025); }
+
+.drop-icon { font-size: 3.6em; animation: levitate 3s ease-in-out infinite; display: block; margin-bottom: 14px; }
+@keyframes levitate { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
+
+.drop-zone h2 {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.82em;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #aaa;
+  margin-bottom: 22px;
+}
+
+.divider {
+  display: flex; align-items: center; gap: 14px;
+  margin: 22px auto;
+  max-width: 320px;
+  color: #2a2a38;
+  font-size: 0.8em; letter-spacing: 0.12em;
+}
+.divider::before,.divider::after { content:''; flex:1; height:1px; background: rgba(255,255,255,0.06); }
+
+.btn-grad {
+  background: linear-gradient(90deg, var(--cyan), var(--magenta));
+  color: #000;
+  border: none;
+  padding: 11px 32px;
+  border-radius: 24px;
+  cursor: pointer;
+  font-family: 'Orbitron', monospace;
+  font-weight: 700;
+  font-size: 0.72em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  transition: all 0.22s;
+  box-shadow: 0 4px 22px rgba(0,245,255,0.2);
+}
+.btn-grad:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(0,245,255,0.35); }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid rgba(0,245,255,0.28);
+  color: var(--cyan);
+  padding: 10px 26px;
+  border-radius: 24px;
+  cursor: pointer;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 0.9em; font-weight: 600;
+  letter-spacing: 0.07em;
+  transition: all 0.2s;
+}
+.btn-ghost:hover { background: rgba(0,245,255,0.07); border-color: var(--cyan); }
+
+.infobox {
+  background: rgba(0,245,255,0.03);
+  border-left: 2px solid var(--cyan);
+  border-radius: 0 10px 10px 0;
+  padding: 16px 18px;
+  margin: 20px 0;
+}
+.infobox h3 {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.66em; letter-spacing: 0.14em;
+  color: var(--cyan); text-transform: uppercase; margin-bottom: 6px;
+}
+.infobox p { color: #777; font-size: 0.93em; line-height: 1.65; }
+
+#game {
+  width: 100%;
+  height: 580px;
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 18px 0;
+  background: #000;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(0,245,255,0.12), 0 12px 50px rgba(0,245,255,0.1);
+}
+
+#ds3Preview {
+  width: 100%;
+  height: 580px;
+  border-radius: 14px;
+  overflow: hidden;
+  margin: 18px 0;
+  background: #000;
+  display: none;
+  position: relative;
+  box-shadow: 0 0 0 1px rgba(0,245,255,0.12), 0 12px 50px rgba(0,245,255,0.1);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+#topScreen {
+  width: 400px; height: 240px;
+  background: #000;
+  border: 1px solid rgba(0,245,255,0.18);
+  border-radius: 6px 6px 0 0;
+  display: flex; align-items: center; justify-content: center;
+  color: #333;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75em;
+}
+.ds3-bezel {
+  width: 420px; height: 12px;
+  background: linear-gradient(90deg, #0a0a14, #111120, #0a0a14);
+  border-left: 1px solid rgba(0,245,255,0.08);
+  border-right: 1px solid rgba(0,245,255,0.08);
+}
+#botScreen {
+  width: 320px; height: 240px;
+  background: #000;
+  border: 1px solid rgba(0,245,255,0.12);
+  border-radius: 0 0 6px 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: #222;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.75em;
+}
+
+#statusBar {
+  display: none;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 18px;
+  background: rgba(0,245,255,0.04);
+  border: 1px solid rgba(0,245,255,0.1);
+  border-radius: 10px;
+  margin: 10px 0;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78em;
+}
+#statusBar.show { display: flex; }
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+#statusText { color: var(--cyan); flex: 1; letter-spacing: 0.04em; }
+#fpsCounter { color: #333; font-size: 0.9em; }
+
+.controls { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin: 14px 0; }
+
+.log-wrap {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid rgba(0,245,255,0.08);
+  border-radius: 10px;
+  padding: 12px;
+  max-height: 160px;
+  overflow-y: auto;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78em;
+  color: var(--cyan);
+  margin: 14px 0;
+}
+.log-wrap::-webkit-scrollbar { width: 4px; }
+.log-wrap::-webkit-scrollbar-thumb { background: rgba(0,245,255,0.2); border-radius: 4px; }
+.log-entry { padding: 3px 2px; border-bottom: 1px solid rgba(0,245,255,0.05); }
+.log-entry .ts { color: #2a3a3a; font-size: 0.9em; }
+
+details summary {
+  cursor: pointer; color: #555; font-weight: 600;
+  letter-spacing: 0.05em; padding: 8px 0; font-size: 0.88em;
+  list-style: none; outline: none; transition: color 0.2s;
+}
+details summary:hover { color: var(--cyan); }
+details[open] summary { color: var(--cyan); }
+
+#nativeBuild {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin: 18px 0;
+}
+
+.build-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 18px 16px;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.build-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.build-card:hover { border-color: rgba(0,245,255,0.2); background: rgba(0,245,255,0.025); }
+.build-card:hover::after { opacity: 1; }
+.build-icon { font-size: 1.8em; margin-bottom: 8px; }
+.build-name {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.62em; letter-spacing: 0.14em;
+  color: #888; text-transform: uppercase; margin-bottom: 4px;
+}
+.build-cmd {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.78em; color: var(--cyan);
+  background: rgba(0,245,255,0.05);
+  border-radius: 5px;
+  padding: 6px 8px;
+  margin-top: 8px;
+  word-break: break-all;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.build-cmd:hover { background: rgba(0,245,255,0.1); }
+.build-cmd:active { background: rgba(0,245,255,0.18); }
+.copy-hint { font-size: 0.7em; color: #2d4040; margin-top: 4px; letter-spacing: 0.04em; }
+
+.keymap {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 8px;
+  margin: 14px 0;
+}
+.key-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px;
+  background: rgba(255,255,255,0.02);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 7px;
+  font-size: 0.85em;
+}
+.key-cap {
+  background: rgba(0,245,255,0.08);
+  border: 1px solid rgba(0,245,255,0.2);
+  border-radius: 5px;
+  padding: 2px 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.82em;
+  color: var(--cyan);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.key-label { color: #666; }
+
+#modal {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.88);
+  z-index: 1000;
+  display: none;
+  align-items: center; justify-content: center;
+}
+#modal.show { display: flex; }
+.modal-box {
+  background: var(--bg2);
+  border: 1px solid rgba(0,245,255,0.22);
+  border-radius: 18px;
+  padding: 38px 34px;
+  min-width: 280px;
+  text-align: center;
+  box-shadow: 0 20px 80px rgba(0,0,0,0.8), 0 0 40px rgba(0,245,255,0.05);
+}
+.modal-title {
+  font-family: 'Orbitron', monospace;
+  font-size: 0.72em; letter-spacing: 0.18em;
+  color: var(--cyan); margin-bottom: 20px; text-transform: uppercase;
+}
+.modal-select {
+  display: block; width: 100%; margin: 0 0 20px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(0,245,255,0.3);
+  border-radius: 8px;
+  color: #fff;
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 1em;
+  cursor: pointer;
+}
+.modal-select option { background: #0d0d1a; }
+
+#toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,245,255,0.12);
+  border: 1px solid rgba(0,245,255,0.3);
+  border-radius: 20px;
+  padding: 8px 22px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.8em;
+  color: var(--cyan);
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+#toast.show { opacity: 1; }
+
+@media (max-width: 600px) {
+  #main { padding: 0 14px 40px; }
+  .card { padding: 22px 18px; }
+  #topScreen { width: 100%; max-width: 400px; }
+  .ds3-bezel { width: 100%; max-width: 420px; }
+  #botScreen { width: 100%; max-width: 320px; }
+}
+</style>
+</head>
+<body>
+
+<button id="toggle" title="ROM Library" aria-label="Toggle ROM library">
+  <span class="bar"></span><span class="bar"></span><span class="bar"></span>
+</button>
+
+<div id="overlay"></div>
+
+<div id="sidebar">
+  <div class="sidebar-top">
+    <span class="sidebar-title">ROM Library</span>
+    <span class="badge" id="countBadge">0</span>
+  </div>
+
+  <input type="text" id="romSearch" placeholder="Search games…" autocomplete="off">
+
+  <div id="romList">
+    <div class="loading-msg"><span class="spin"></span>Fetching from GitHub…</div>
+  </div>
+
+  <div class="sidebar-footer">
+    <button class="sb-btn sb-btn-cyan" id="reloadBtn">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M23 4v6h-6"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      Refresh GitHub
+    </button>
+    <button class="sb-btn sb-btn-ghost" id="folderBtn">📁 &nbsp;Load Local Folder</button>
+    <div class="src-tag" id="srcTag">twelv12-mon / mid-end-emulator-core</div>
+  </div>
+</div>
+
+<div id="main">
+  <div class="header">
+    <div class="logo-wrap">
+      <span class="logo">MINDWORKS 3DS</span>
+      <span class="logo-sub">Native Emulator &amp; Browser Frontend</span>
+      <span class="logo-line"></span>
+    </div>
+    <a href="https://instagram.com/12moneyy" target="_blank" rel="noopener" class="social-link">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+      @12moneyy
+    </a>
+  </div>
+
+  <div class="card">
+
+    <div id="welcomeSection">
+      <div class="drop-zone" id="dropZone">
+        <span class="drop-icon">🎮</span>
+        <h2>Drop a ROM File Here</h2>
+        <input type="file" id="fileInput" hidden>
+        <button class="btn-grad" id="browseBtn">Browse File</button>
+        <div class="divider">or</div>
+        <button class="btn-ghost" id="openLibBtn">Open ROM Library →</button>
+      </div>
+
+      <div class="infobox" style="margin-top:24px;">
+        <h3>Browser Mode</h3>
+        <p>Drag &amp; drop any ROM directly, or open the ☰ library to pick from your GitHub repo or local folder. Uses <strong style="color:#ccc;">EmulatorJS</strong> — supports NES, SNES, N64, GBA, NDS, PSX, Sega, and more. For <strong style="color:var(--cyan);">3DS games</strong>, use the native app below.</p>
+      </div>
+
+      <div class="infobox" style="border-left-color: var(--magenta);">
+        <h3 style="color:var(--magenta);">3DS / Native Mode</h3>
+        <p>Real 3DS emulation (<code style="color:var(--cyan);">.3ds</code> / <code style="color:var(--cyan);">.elf</code>) requires the <strong style="color:#ccc;">native desktop app</strong> — SDL2 + ARM interpreter can't run in a browser. Download the build for your OS below, then run: <code style="color:var(--cyan);">mindworks game.3ds</code></p>
+      </div>
+    </div>
+
+    <div id="gameSection" style="display:none;">
+      <div id="statusBar">
+        <span class="status-dot"></span>
+        <span id="statusText">Now Playing</span>
+        <span id="fpsCounter"></span>
+      </div>
+
+      <div id="game"></div>
+
+      <div id="ds3Preview">
+        <div id="topScreen">TOP SCREEN — 400 × 240<br><small style="color:#1a1a28;margin-top:6px;display:block;">Launch native app for real 3DS emulation</small></div>
+        <div class="ds3-bezel"></div>
+        <div id="botScreen">TOUCH SCREEN — 320 × 240</div>
+      </div>
+
+      <div class="controls">
+        <button class="btn-grad" id="downloadLogBtn">📥 Save Log</button>
+        <button class="btn-ghost" id="newGameBtn">🔄 Load New ROM</button>
+      </div>
+
+      <div class="infobox">
+        <h3 id="gameTitleEl">Now Playing</h3>
+        <p id="gameInfoEl"></p>
+      </div>
+
+      <details>
+        <summary>▸ Activity Log</summary>
+        <div class="log-wrap" id="logWrap"></div>
+      </details>
+    </div>
+
+  </div>
+
+  <div class="card">
+    <div style="margin-bottom:18px;">
+      <h2 style="font-family:'Orbitron',monospace;font-size:0.78em;letter-spacing:0.15em;color:#ccc;text-transform:uppercase;">Native App — Build &amp; Run</h2>
+      <p style="color:#555;font-size:0.9em;margin-top:6px;line-height:1.6;">Compile the MindWorks 3DS emulator for your OS. Requires <a href="https://dot.net" style="color:var(--cyan);text-decoration:none;" target="_blank">.NET 8 SDK</a> + SDL2 runtime.</p>
+    </div>
+
+    <div id="nativeBuild">
+      <div class="build-card">
+        <div class="build-icon">🐧</div>
+        <div class="build-name">Linux x64</div>
+        <div class="build-cmd" data-copy="dotnet publish -c Release -r linux-x64">dotnet publish -c Release -r linux-x64</div>
+        <div class="copy-hint">Click to copy ↑</div>
+        <div style="margin-top:10px;font-size:0.78em;color:#444;">Deps: <code style="color:var(--cyan);">apt install libsdl2-2.0-0 libopenal1</code></div>
+      </div>
+      <div class="build-card">
+        <div class="build-icon">🪟</div>
+        <div class="build-name">Windows x64</div>
+        <div class="build-cmd" data-copy="dotnet publish -c Release -r win-x64">dotnet publish -c Release -r win-x64</div>
+        <div class="copy-hint">Click to copy ↑</div>
+        <div style="margin-top:10px;font-size:0.78em;color:#444;">Place SDL2.dll + OpenAL32.dll next to .exe</div>
+      </div>
+      <div class="build-card">
+        <div class="build-icon">🍎</div>
+        <div class="build-name">macOS x64</div>
+        <div class="build-cmd" data-copy="dotnet publish -c Release -r osx-x64">dotnet publish -c Release -r osx-x64</div>
+        <div class="copy-hint">Click to copy ↑</div>
+        <div style="margin-top:10px;font-size:0.78em;color:#444;">Deps: <code style="color:var(--cyan);">brew install sdl2 openal-soft</code></div>
+      </div>
+      <div class="build-card">
+        <div class="build-icon">🍎</div>
+        <div class="build-name">macOS ARM64</div>
+        <div class="build-cmd" data-copy="dotnet publish -c Release -r osx-arm64">dotnet publish -c Release -r osx-arm64</div>
+        <div class="copy-hint">Click to copy ↑</div>
+        <div style="margin-top:10px;font-size:0.78em;color:#444;">Apple Silicon (M1/M2/M3/M4)</div>
+      </div>
+      <div class="build-card">
+        <div class="build-icon">🐧</div>
+        <div class="build-name">Linux ARM64</div>
+        <div class="build-cmd" data-copy="dotnet publish -c Release -r linux-arm64">dotnet publish -c Release -r linux-arm64</div>
+        <div class="copy-hint">Click to copy ↑</div>
+        <div style="margin-top:10px;font-size:0.78em;color:#444;">Raspberry Pi 4/5, etc.</div>
+      </div>
+      <div class="build-card" style="border-color:rgba(255,0,255,0.1);">
+        <div class="build-icon">🌐</div>
+        <div class="build-name">Browser / WASM</div>
+        <div style="color:#333;font-size:0.8em;margin-top:8px;line-height:1.6;">Native SDL2 P/Invoke ≠ WASM.<br>Use <strong style="color:#555;"><a href="wasm/index.html" target="_blank" style="color:inherit;text-decoration:none;">this site's WASM build</a></strong> for browser play.<br>Early stage, limited features.</div>
+      </div>
+    </div>
+
+    <div class="infobox" style="margin-top:4px;">
+      <h3>Launch</h3>
+      <p>
+        <code style="color:var(--cyan);">./mindworks game.3ds</code> &nbsp;—&nbsp; load a decrypted 3DS ROM<br>
+        <code style="color:var(--cyan);">./mindworks homebrew.elf</code> &nbsp;—&nbsp; load ARM11 ELF homebrew<br>
+        <code style="color:var(--cyan);">./mindworks --test</code> &nbsp;—&nbsp; SDL2 display test (no ROM needed)<br>
+        <code style="color:var(--cyan);">./mindworks --vm</code> &nbsp;—&nbsp; MindWorks VM assembler demo
+      </p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 style="font-family:'Orbitron',monospace;font-size:0.78em;letter-spacing:0.15em;color:#ccc;text-transform:uppercase;margin-bottom:18px;">Control Map</h2>
+    <div class="keymap">
+      <div class="key-row"><span class="key-cap">↑↓←→</span><span class="key-label">D-Pad</span></div>
+      <div class="key-row"><span class="key-cap">Z</span><span class="key-label">A Button</span></div>
+      <div class="key-row"><span class="key-cap">X</span><span class="key-label">B Button</span></div>
+      <div class="key-row"><span class="key-cap">A</span><span class="key-label">Y Button</span></div>
+      <div class="key-row"><span class="key-cap">S</span><span class="key-label">X Button</span></div>
+      <div class="key-row"><span class="key-cap">Q</span><span class="key-label">L Trigger</span></div>
+      <div class="key-row"><span class="key-cap">W</span><span class="key-label">R Trigger</span></div>
+      <div class="key-row"><span class="key-cap">Enter</span><span class="key-label">Start</span></div>
+      <div class="key-row"><span class="key-cap">R Shift</span><span class="key-label">Select</span></div>
+      <div class="key-row"><span class="key-cap">Click</span><span class="key-label">Touchscreen</span></div>
+      <div class="key-row"><span class="key-cap">Esc</span><span class="key-label">Quit / Menu</span></div>
+    </div>
+    <p style="color:#333;font-size:0.8em;margin-top:12px;">Native app only. Browser (EmulatorJS) uses its own built-in touch/gamepad controls.</p>
+  </div>
+
+</div>
+
+<div id="modal">
+  <div class="modal-box">
+    <div class="modal-title">Select Console</div>
+    <select class="modal-select" id="coreSelect"></select>
+    <button class="btn-grad" id="modalOk" style="font-size:0.72em;">Load Game</button>
+  </div>
+</div>
+
+<div id="toast">Copied!</div>
+
+<script>
+const GITHUB_OWNER='twelv12-mon',GITHUB_REPO='mid-end-emulator-core',GITHUB_PATH='roms';
+const GITHUB_API=`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/${GITHUB_PATH}`;
+const IGNORED_EXTS=new Set(['md','txt','json','png','jpg','jpeg','gif','state','srm','sav','xml']);
+const EXT_CORE={nes:'nes',fds:'nes',unf:'nes',unif:'nes',sfc:'snes',smc:'snes',fig:'snes',gd3:'snes',swc:'snes',z64:'n64',n64:'n64',nds:'nds',gba:'gba',gb:'gb',gbc:'gb',md:'segaMD',gen:'segaMD',sms:'segaMS',gg:'segaGG',psx:'psx',bin:'psx',iso:'psx',vb:'vb',lnx:'lynx',a26:'atari2600',a78:'atari7800'};
+const ICONS={nes:'🎮',snes:'🕹️',n64:'🎯',nds:'📱',gba:'📟',gb:'🟩',segaMD:'🦔',segaMS:'🎮',segaGG:'📺',psx:'🔵',vb:'🔴',lynx:'📺',atari2600:'👾',atari7800:'👾'};
+const CONSOLE_NAMES={nes:'NES',snes:'SNES',n64:'Nintendo 64',nds:'Nintendo DS',gba:'Game Boy Advance',gb:'Game Boy',segaMD:'Sega Mega Drive',segaMS:'Sega Master System',segaGG:'Game Gear',psx:'PlayStation',vb:'Virtual Boy',lynx:'Atari Lynx',atari2600:'Atari 2600',atari7800:'Atari 7800'};
+const ALL_CORES={'Nintendo 64':'n64','Nintendo Game Boy':'gb','Game Boy Advance':'gba','Nintendo DS':'nds','NES / Famicom':'nes','Super Nintendo':'snes','PlayStation':'psx','Virtual Boy':'vb','Sega Mega Drive':'segaMD','Sega Master System':'segaMS','Sega CD':'segaCD','Atari Lynx':'lynx','Sega 32X':'sega32x','Sega Game Gear':'segaGG','Sega Saturn':'segaSaturn','Atari 7800':'atari7800','Atari 2600':'atari2600'};
+
+const log=[],logWrap=document.getElementById('logWrap');
+function addLog(msg){const ts=new Date().toLocaleTimeString();log.push({ts,msg});if(logWrap)logWrap.innerHTML=log.slice(-30).reverse().map(e=>`<div class="log-entry"><span class="ts">[${e.ts}]</span> ${esc(e.msg)}</div>`).join('');}
+addLog('MindWorks initialized');
+
+const sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay'),toggleEl=document.getElementById('toggle');
+const openSB=()=>{sidebar.classList.add('open');document.body.classList.add('open');};
+const closeSB=()=>{sidebar.classList.remove('open');document.body.classList.remove('open');};
+toggleEl.addEventListener('click',()=>sidebar.classList.contains('open')?closeSB():openSB());
+overlay.addEventListener('click',closeSB);
+document.getElementById('openLibBtn').addEventListener('click',openSB);
+
+let roms=[];
+async function fetchGitHub(){const list=document.getElementById('romList');list.innerHTML='<div class="loading-msg"><span class="spin"></span>Fetching GitHub…</div>';setBadge('…');try{const res=await fetch(GITHUB_API);if(!res.ok)throw new Error(`GitHub API: ${res.status}`);const data=await res.json();roms=[];for(const item of data){if(item.type!=='file')continue;const ext=item.name.split('.').pop().toLowerCase();if(IGNORED_EXTS.has(ext))continue;roms.push({name:item.name,ext,core:EXT_CORE[ext]||null,url:item.download_url,src:'github'});}roms.sort((a,b)=>a.name.localeCompare(b.name));document.getElementById('srcTag').textContent=`${GITHUB_OWNER} / ${GITHUB_REPO}`;renderList(roms);addLog(`GitHub: loaded ${roms.length} ROMs`);}catch(e){list.innerHTML=`<div class="empty-msg">⚠️ GitHub load failed<br><small style="color:#333;">${e.message}</small></div>`;setBadge('!');addLog('GitHub fetch failed: '+e.message);}}
+fetchGitHub();
+document.getElementById('reloadBtn').addEventListener('click',fetchGitHub);
+
+document.getElementById('folderBtn').addEventListener('click',async()=>{if(!window.showDirectoryPicker){alert('Requires Chrome/Edge/Opera.');return;}try{const dir=await window.showDirectoryPicker({mode:'read'});roms=[];for await(const entry of dir.values()){if(entry.kind!=='file')continue;const ext=entry.name.split('.').pop().toLowerCase();if(IGNORED_EXTS.has(ext))continue;const file=await entry.getFile();roms.push({name:entry.name,ext,core:EXT_CORE[ext]||null,url:URL.createObjectURL(file),src:'local'});}roms.sort((a,b)=>a.name.localeCompare(b.name));document.getElementById('srcTag').textContent=`Local: ${dir.name}`;renderList(roms);openSB();addLog(`Local folder: ${roms.length} ROMs`);}catch(e){if(e.name!=='AbortError')console.error(e);}});
+
+function renderList(files){const list=document.getElementById('romList');setBadge(files.length);if(!files.length){list.innerHTML='<div class="empty-msg">No ROMs found.</div>';return;}const groups={};files.forEach(r=>{const label=CONSOLE_NAMES[r.core]||'Other';(groups[label]=groups[label]||[]).push(r);});list.innerHTML=Object.entries(groups).sort(([a],[b])=>a.localeCompare(b)).map(([label,rs])=>`<div class="group-label">${esc(label)}</div>${rs.map(r=>`<button class="rom-btn" data-name="${esc(r.name)}"><span class="rom-icon">${ICONS[r.core]||'🎮'}</span><span class="rom-meta"><span class="rom-name">${esc(r.name.replace(/\.[^.]+$/,''))}</span><span class="rom-ext">${r.ext}</span></span></button>`).join('')}`).join('');list.querySelectorAll('.rom-btn').forEach(btn=>{btn.addEventListener('click',async()=>{list.querySelectorAll('.rom-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');const name=btn.dataset.name;const rom=roms.find(r=>r.name===name);if(!rom)return;let core=rom.core;if(!core)core=await pickCore();if(!core)return;launchROM(rom.url,rom.name,core);closeSB();});});}
+
+document.getElementById('romSearch').addEventListener('input',e=>{const q=e.target.value.toLowerCase();renderList(roms.filter(r=>r.name.toLowerCase().includes(q)));});
+
+const fileInput=document.getElementById('fileInput'),dropZone=document.getElementById('dropZone');
+document.getElementById('browseBtn').addEventListener('click',e=>{e.stopPropagation();fileInput.click();});
+dropZone.addEventListener('click',e=>{if(e.target===dropZone||e.target.closest('.drop-icon')||e.target.tagName==='H2')fileInput.click();});
+dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('drag');});
+dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('drag'));
+dropZone.addEventListener('drop',e=>{e.preventDefault();dropZone.classList.remove('drag');if(e.dataTransfer.files[0])handleFile(e.dataTransfer.files[0]);});
+fileInput.addEventListener('change',()=>{if(fileInput.files[0])handleFile(fileInput.files[0]);});
+
+async function handleFile(file){const ext=file.name.split('.').pop().toLowerCase();let core=EXT_CORE[ext]||null;if(ext==='3ds'||ext==='cci'){show3DSNotice(file.name);return;}if(!core)core=await pickCore();if(!core)return;launchROM(URL.createObjectURL(file),file.name,core);}
+
+function show3DSNotice(name){document.getElementById('welcomeSection').style.display='none';document.getElementById('gameSection').style.display='block';document.getElementById('game').style.display='none';document.getElementById('ds3Preview').style.display='flex';document.getElementById('statusBar').classList.add('show');document.getElementById('statusText').textContent=`${name} — Use native app for 3DS`;document.getElementById('gameTitleEl').textContent=name.replace(/\.[^.]+$/,'');document.getElementById('gameInfoEl').innerHTML='3DS ROMs require the native desktop app. Run: <code style="color:var(--cyan)">./mindworks '+esc(name)+'</code>';addLog(`3DS ROM detected: ${name} — browser can't emulate, showing info`);}
+
+function pickCore(){return new Promise(resolve=>{const modal=document.getElementById('modal'),select=document.getElementById('coreSelect');select.innerHTML=Object.entries(ALL_CORES).map(([n,v])=>`<option value="${v}">${n}</option>`).join('');modal.classList.add('show');document.getElementById('modalOk').onclick=()=>{modal.classList.remove('show');resolve(select.value);};modal.addEventListener('click',e=>{if(e.target===modal){modal.classList.remove('show');resolve(null);}},{once:true});});}
+
+function destroyEmulator(){try{if(window.EJS_emulator?.audioContext)window.EJS_emulator.audioContext.close();}catch(e){}document.querySelectorAll('audio,video').forEach(el=>{try{el.pause();el.src='';el.load();el.remove();}catch(e){}});['EJS_emulator','EJS_player','EJS_gameName','EJS_biosUrl','EJS_gameUrl','EJS_core','EJS_pathtodata','EJS_startOnLoaded','EmulatorJS'].forEach(k=>{try{delete window[k];}catch(e){window[k]=undefined;}});const g=document.getElementById('game');if(g){const fresh=g.cloneNode(false);g.parentNode.replaceChild(fresh,g);}const old=document.getElementById('ejsScript');if(old)old.remove();}
+
+function launchROM(url,name,core){const cleanName=name.replace(/\.[^.]+$/,'');addLog(`Loading: ${name} [${core}]`);destroyEmulator();document.getElementById('welcomeSection').style.display='none';document.getElementById('gameSection').style.display='block';document.getElementById('game').style.display='block';document.getElementById('game').style.height='580px';document.getElementById('ds3Preview').style.display='none';document.getElementById('statusBar').classList.add('show');document.getElementById('statusText').textContent=cleanName;document.getElementById('gameTitleEl').textContent=`Now Playing: ${cleanName}`;document.getElementById('gameInfoEl').textContent=`Console: ${CONSOLE_NAMES[core]||core.toUpperCase()} · Started: ${new Date().toLocaleString()}`;setTimeout(()=>{window.EJS_player='#game';window.EJS_gameName=cleanName;window.EJS_biosUrl='';window.EJS_gameUrl=url;window.EJS_core=core;window.EJS_pathtodata='https://rawcdn.githack.com/EmulatorJS/EmulatorJS/main/data/';window.EJS_startOnLoaded=true;const s=document.createElement('script');s.id='ejsScript';s.src=`https://rawcdn.githack.com/EmulatorJS/EmulatorJS/main/data/loader.js?t=${Date.now()}`;s.onload=()=>addLog(`Emulator ready: ${cleanName}`);s.onerror=()=>addLog(`Emulator load error for: ${cleanName}`);document.body.appendChild(s);},120);}
+
+document.getElementById('downloadLogBtn').addEventListener('click',()=>{const blob=new Blob([JSON.stringify({exported:new Date().toISOString(),log},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`mindworks_log_${Date.now()}.json`;a.click();addLog('Log saved');});
+
+document.getElementById('newGameBtn').addEventListener('click',()=>{destroyEmulator();document.getElementById('gameSection').style.display='none';document.getElementById('welcomeSection').style.display='block';document.getElementById('statusBar').classList.remove('show');addLog('Reset to welcome screen');});
+
+const toast=document.getElementById('toast');let toastTimer;function showToast(msg='Copied!'){toast.textContent=msg;toast.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>toast.classList.remove('show'),2000);}
+document.querySelectorAll('.build-cmd').forEach(el=>{el.addEventListener('click',()=>{const txt=el.dataset.copy||el.textContent;navigator.clipboard.writeText(txt).then(()=>showToast('Command copied!')).catch(()=>{const ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();showToast('Command copied!');});});});
+
+function setBadge(n){const el=document.getElementById('countBadge');if(el)el.textContent=String(n);}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+let lastMove=0;
+document.addEventListener('mousemove',e=>{if(Date.now()-lastMove>5000){addLog(`Mouse: ${e.clientX},${e.clientY}`);lastMove=Date.now();}});
+document.addEventListener('visibilitychange',()=>addLog(document.hidden?'Tab hidden':'Tab visible'));
+window.addEventListener('beforeunload',()=>addLog('Session ended'));
+</script>
+</body>
+</html>

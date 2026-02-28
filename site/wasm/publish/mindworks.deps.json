@@ -1,0 +1,221 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0/browser-wasm",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {},
+    ".NETCoreApp,Version=v8.0/browser-wasm": {
+      "mindworks/1.0.0": {
+        "dependencies": {
+          "runtimepack.Microsoft.NETCore.App.Runtime.Mono.browser-wasm": "8.0.24"
+        },
+        "runtime": {
+          "mindworks.dll": {}
+        }
+      },
+      "runtimepack.Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.24": {
+        "runtime": {
+          "System.Collections.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.2426.7010"
+          },
+          "System.Console.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.2426.7010"
+          },
+          "System.Linq.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.2426.7010"
+          },
+          "System.Runtime.InteropServices.JavaScript.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.2426.7010"
+          }
+        },
+        "native": {
+          "System.Private.CoreLib.dll": {
+            "assemblyVersion": "8.0.0.0",
+            "fileVersion": "8.0.2426.7010"
+          },
+          "dotnet-legacy.d.ts": {
+            "fileVersion": "0.0.0.0"
+          },
+          "dotnet.d.ts": {
+            "fileVersion": "0.0.0.0"
+          },
+          "dotnet.js": {
+            "fileVersion": "0.0.0.0"
+          },
+          "dotnet.js.map": {
+            "fileVersion": "0.0.0.0"
+          },
+          "dotnet.native.js": {
+            "fileVersion": "0.0.0.0"
+          },
+          "dotnet.native.js.symbols": {
+            "fileVersion": "0.0.0.0"
+          },
+          "dotnet.native.wasm": {
+            "fileVersion": "0.0.0.0"
+          },
+          "dotnet.runtime.js": {
+            "fileVersion": "0.0.0.0"
+          },
+          "dotnet.runtime.js.map": {
+            "fileVersion": "0.0.0.0"
+          },
+          "icudt.dat": {
+            "fileVersion": "0.0.0.0"
+          },
+          "icudt_CJK.dat": {
+            "fileVersion": "0.0.0.0"
+          },
+          "icudt_EFIGS.dat": {
+            "fileVersion": "0.0.0.0"
+          },
+          "icudt_hybrid.dat": {
+            "fileVersion": "0.0.0.0"
+          },
+          "icudt_no_CJK.dat": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libSystem.Globalization.Native.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libSystem.IO.Compression.Native.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libSystem.Native.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libicudata.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libicui18n.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libicuuc.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-component-debugger-static.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-component-debugger-stub-static.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-component-diagnostics_tracing-static.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-component-diagnostics_tracing-stub-static.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-component-hot_reload-static.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-component-hot_reload-stub-static.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-component-marshal-ilgen-static.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-component-marshal-ilgen-stub-static.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-ee-interp.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-icall-table.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-profiler-aot.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-profiler-browser.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-wasm-eh-js.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-wasm-eh-wasm.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-wasm-nosimd.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmono-wasm-simd.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "libmonosgen-2.0.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "package.json": {
+            "fileVersion": "0.0.0.0"
+          },
+          "wasm-bundled-timezones.a": {
+            "fileVersion": "0.0.0.0"
+          },
+          "gc-common.h": {
+            "fileVersion": "0.0.0.0"
+          },
+          "pinvoke.h": {
+            "fileVersion": "0.0.0.0"
+          },
+          "wasm-config.h": {
+            "fileVersion": "0.0.0.0"
+          },
+          "corebindings.c": {
+            "fileVersion": "0.0.0.0"
+          },
+          "driver.c": {
+            "fileVersion": "0.0.0.0"
+          },
+          "emcc-default.rsp": {
+            "fileVersion": "0.0.0.0"
+          },
+          "emcc-link.rsp": {
+            "fileVersion": "0.0.0.0"
+          },
+          "emcc-props.json": {
+            "fileVersion": "0.0.0.0"
+          },
+          "pal_random.lib.js": {
+            "fileVersion": "0.0.0.0"
+          },
+          "pinvoke.c": {
+            "fileVersion": "0.0.0.0"
+          },
+          "dotnet.es6.extpost.js": {
+            "fileVersion": "0.0.0.0"
+          },
+          "dotnet.es6.lib.js": {
+            "fileVersion": "0.0.0.0"
+          },
+          "dotnet.es6.pre.js": {
+            "fileVersion": "0.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "mindworks/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "runtimepack.Microsoft.NETCore.App.Runtime.Mono.browser-wasm/8.0.24": {
+      "type": "runtimepack",
+      "serviceable": false,
+      "sha512": ""
+    }
+  },
+  "runtimes": {
+    "browser-wasm": [
+      "browser",
+      "any",
+      "base"
+    ]
+  }
+}

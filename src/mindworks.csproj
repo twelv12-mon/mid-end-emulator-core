@@ -1,0 +1,79 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <AssemblyName>mindworks</AssemblyName>
+    <RootNamespace>mindworks</RootNamespace>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
+    <Nullable>disable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
+  </PropertyGroup>
+
+  <!-- WebAssembly build tweaks -->
+  <PropertyGroup Condition="'$(RuntimeIdentifier)'=='browser-wasm'">
+    <PublishSingleFile>false</PublishSingleFile>
+    <UseAppHost>false</UseAppHost>
+    <!-- wasm build doesn't support console input or threading; warnings are expected -->
+  </PropertyGroup>
+
+  <!--
+    ╔══════════════════════════════════════════════════════════╗
+    ║  MINDWORKS BUILD GUIDE                                   ║
+    ╠══════════════════════════════════════════════════════════╣
+    ║                                                          ║
+    ║  DEV (any OS, needs .NET 8 SDK installed):               ║
+    ║    dotnet build                                          ║
+    ║    dotnet run                    # interactive menu      ║
+    ║    dotnet run game.3ds        # load ROM directly     ║
+    ║    dotnet run  test          # SDL2 display test     ║
+    ║    dotnet run vm            # VM demo               ║
+    ║                                                          ║
+    ║  PUBLISH LINUX x64 (produces single native binary):      ║
+    ║    dotnet publish -c Release -r linux-x64                ║
+    ║    chmod +x bin/Release/net8.0/linux-x64/publish/mindworks
+    ║    ./bin/Release/net8.0/linux-x64/publish/mindworks      ║
+    ║                                                          ║
+    ║  PUBLISH LINUX ARM64 (Pi 4, etc.):                       ║
+    ║    dotnet publish -c Release -r linux-arm64              ║
+    ║                                                          ║
+    ║  PUBLISH WINDOWS x64:                                    ║
+    ║    dotnet publish -c Release -r win-x64                  ║
+    ║    (output: mindworks.exe)                               ║
+    ║                                                          ║
+    ║  PUBLISH macOS Intel:                                    ║
+    ║    dotnet publish -c Release -r osx-x64                  ║
+    ║                                                          ║
+    ║  PUBLISH macOS Apple Silicon:                            ║
+    ║    dotnet publish -c Release -r osx-arm64                ║
+    ║                                                          ║
+    ║  WASM NOTE:                                              ║
+    ║    Native SDL2 P/Invoke does not work in WebAssembly.    ║
+    ║    Use mindworks.html for browser-based emulation        ║
+    ║    (powered by EmulatorJS, same UI/design language).     ║
+    ║                                                          ║
+    ╠══════════════════════════════════════════════════════════╣
+    ║  RUNTIME DEPS (must be present on target machine)        ║
+    ╠══════════════════════════════════════════════════════════╣
+    ║                                                          ║
+    ║  Linux:                                                  ║
+    ║    sudo apt install libsdl2-2.0-0 libopenal1             ║
+    ║                                                          ║
+    ║  Windows:                                                ║
+    ║    Place SDL2.dll + OpenAL32.dll next to mindworks.exe   ║
+    ║    SDL2:    https://github.com/libsdl-org/SDL/releases   ║
+    ║    OpenAL:  https://www.openal-soft.org/#download        ║
+    ║                                                          ║
+    ║  macOS:                                                  ║
+    ║    brew install sdl2 openal-soft                         ║
+    ║                                                          ║
+    ╚══════════════════════════════════════════════════════════╝
+  -->
+
+</Project>

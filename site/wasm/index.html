@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MindWorks WASM</title>
+<style>body{margin:0;background:#06060e;color:#e0e0e0;font-family:Arial,Helvetica,sans-serif}#mindworks-wasm-root{display:flex;gap:12px;padding:18px;flex-direction:column;align-items:center}canvas{background:#000;border-radius:6px;border:1px solid rgba(255,255,255,0.04)}</style>
+</head>
+<body>
+<div id="mindworks-wasm-root">
+  <h2>MindWorks WASM (Browser)</h2>
+  <div>Use the ROM library on the main page or drop a non-3DS ROM here; 3DS native emulation is limited.</div>
+  <div id="status" style="color:#aaa"></div>
+</div>
+
+<script type="module">
+// Load bridge and wasm bootstrap
+import './bridge.js';
+// Load wasm loader (if present)
+if (document.location.pathname.endsWith('/index.html')){
+  // Try to load dotnet boot files relative to this folder
+  (async function(){
+    const config = {
+      mainAssemblyName: 'mindworks',
+    };
+    try{
+      const loader = await import('../wasmload.js');
+      document.getElementById('status').textContent = 'WASM loader loaded.';
+    }catch(e){
+      console.error('wasmload import failed',e);
+      document.getElementById('status').textContent = 'WASM loader not found.';
+    }
+  })();
+}
+</script>
+</body>
+</html>
